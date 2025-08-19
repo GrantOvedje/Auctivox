@@ -1,4 +1,5 @@
 import { auth } from "@/auth";
+import Image from "next/image";
 import SignIn from "@/components/sign-in";
 import { SignOut } from "@/components/sign-out";
 import { Button } from "@/components/ui/button";
@@ -8,37 +9,34 @@ import { items  } from "@/db/schema";
 import { revalidatePath } from "next/cache";
 
 export default async function Home() {
-
   const session = await auth()
  
   const allItems = await database.query.items.findMany();
 
 
   return (
-   <main className="container mx-auto py-12">
-    { session ? <SignOut /> : <SignIn />}
+   <main className="container mx-auto py-12 space-y-8">
+    <h1 className="text-4xl font-bold">Items For Sale</h1>
 
-    {session?.user?.name}
-    
-    <form
-      action={async (formData: FormData) => {
-        "use server";
-        if (!session?.user?.id) return;
-        
-        await database.insert(items).values({
-          name: formData.get("name") as string,
-          userId: session.user.id,
-        });
-        revalidatePath("/");
-      }}
-    >
-      <Input name="name" placeholder="Name your item" />
-      <Button type="submit">Post Item</Button>
-    </form>
+    <div className="grid grid-cols-4 gap-8">
+      {allItems.map((item) => (
+        <div key={item.id} className="border p-8 rounded-xl space-y-2">
+          {item.imageUrl && (
+            <Image
+              src={item.imageUrl}
+              alt={item.name}
+              width={400}   // required
+              height={300}  // required
+              className="w-full h-48 object-cover rounded-md"
+            />
+          )}
+          <h2 className="font-bold">{item.name}</h2>
+          <p>Starting price: ${item.startingPrice / 100}</p>
+        </div>
+      ))}
+    </div>
 
-    {allItems.map((item) => (
-      <div key={item.id}>{item.name}</div>
-    ))}
    </main>
   );
 }
+// database password for supabase-dETKyVJv9IACd0BT
