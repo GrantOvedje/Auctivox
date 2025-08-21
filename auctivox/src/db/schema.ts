@@ -96,6 +96,7 @@ export const items = pgTable("bb_item", {
     name: text("name").notNull(),
     startingPrice: integer("startingPrice").notNull().default(0),
     imageUrl: text("imageUrl"),
+    bidInterval: integer("bidInterval").notNull().default(500),
 });
 
 export type Item = typeof items.$inferSelect;
