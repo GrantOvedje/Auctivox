@@ -2,6 +2,10 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Header } from "./header";
+import "@knocklabs/react/dist/index.css";
+import { AppKnockProvider } from "./knock-provider";
+import { SessionProvider } from "next-auth/react";
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,9 +32,15 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Header />
-        <div className="container mx-auto py-12">{children}</div>
+        <SessionProvider>
+          <AppKnockProvider>
+            <Header />
+            <div className="container mx-auto py-12">{children}</div>
+          </AppKnockProvider>
+        </SessionProvider>
       </body>
     </html>
   );
 }
+
+// the code to add join the className for body tag na  min-h-screen bg-background font-sans  

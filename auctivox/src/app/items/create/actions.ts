@@ -6,7 +6,7 @@ import { database } from "@/db/database";
 import { redirect } from "next/navigation";
 import { uploadImage } from "@/lib/supabaseClient";
 
-export async function createItemAction(formData: FormData) {
+export async function createItemAction( formData: FormData ) {
     const session = await auth();
 
     if(!session) {
@@ -48,7 +48,12 @@ export async function createItemAction(formData: FormData) {
     //     imageUrl = publicUrl.publicUrl;
     // }
 
- 
+
+  // 🟢 Parse end date
+    const endDateRaw = formData.get("endDate") as string;
+    const endDate = new Date(endDateRaw);
+
+
   // Handle file upload
     const file = formData.get("image") as File | null;
     let imageUrl: string | null = null;
@@ -64,6 +69,7 @@ export async function createItemAction(formData: FormData) {
         startingPrice: priceAsCents,
         userId: user.id,
         imageUrl,
+        endDate,
     });
     redirect("/");
 }

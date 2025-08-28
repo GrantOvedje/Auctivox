@@ -1,5 +1,9 @@
 import { handlers } from "@/auth" // Referring to the auth.ts we just created
+
 export const { GET, POST } = handlers
+
+
+
 // import { supabase } from "@/lib/supabaseClient";
 
 // export async function POST(req: Request) {

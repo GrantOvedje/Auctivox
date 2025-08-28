@@ -3,6 +3,9 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { convertToDollar } from "@/util/currency";
+import { format } from "date-fns";
+import { isBidOver } from "@/util/bid-is-over";
+
 
 export function ItemCard({item}: {item: Item}) {
     return (
@@ -17,10 +20,24 @@ export function ItemCard({item}: {item: Item}) {
             />
             )}
             <h2 className="text-xl font-bold">{item.name}</h2>
-            <p className="text-lg">Starting price: ${convertToDollar(item.startingPrice)}</p>
+            <p className="text-lg">
+                Starting price: ${convertToDollar(item.startingPrice)}
+            </p>
 
-            <Button asChild>
-                <Link href={`/items/${item.id}`}>Place Bid</Link>
+            {isBidOver(item) ? (
+                <p className="text-lg">Bidding is Over</p>
+            ) : (
+                <p className="text-lg">
+                    Ends on: {format(item.endDate, "eeee MM/dd/yy")}
+                </p>
+            )}
+
+            
+
+            <Button asChild variant={isBidOver(item) ? "outline" : "default"}>
+                <Link href={`/items/${item.id}`}>
+                    {isBidOver(item) ? "View Bid" : "Place Bid"}
+                </Link>
             </Button>
         </div>
     );

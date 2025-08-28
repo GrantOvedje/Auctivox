@@ -1,10 +1,20 @@
-import { auth } from "@/auth";
-import SignIn from "@/components/sign-in";
-import { SignOut } from "@/components/sign-out";
-import Link from "next/link";
+"use client";
 
-export async function Header(){
-    const session = await auth();
+import { Button } from "@/components/ui/button";
+import { convertToDollar } from "@/util/currency";
+import { NotificationCell, NotificationFeedPopover, NotificationIconButton } from "@knocklabs/react";
+import { signIn, signOut, useSession } from "next-auth/react";
+import Image from "next/image";
+import Link from "next/link";
+import { useRef, useState } from "react";
+
+export function Header(){
+    const [isVisible, setIsVisible] = useState(false);
+    const notifButtonRef = useRef(null);
+    const session = useSession();
+
+    const userId = session?.data?.user?.id;
+
 
     return (
         <div className="bg-gray-200 py-2">
@@ -22,28 +32,112 @@ export async function Header(){
                             All Auctions
                         </Link>
 
-                        <Link 
-                            href="/items/create" 
-                            className="hover:unerline flex items-center gap-1"
-                        >
-                            Create Auction
-                        </Link>
+                        {userId && (
+                            <>
+                                <Link 
+                                    href="/items/create" 
+                                    className="hover:unerline flex items-center gap-1"
+                                >
+                                    Create Auction
+                                </Link>
 
-                        <Link 
-                            href="/auctions" 
-                            className="hover:unerline flex items-center gap-1"
-                        >
-                            My Auctions
-                        </Link>
+                                <Link 
+                                    href="/auctions" 
+                                    className="hover:unerline flex items-center gap-1"
+                                >
+                                    My Auctions
+                                </Link>
+                            </>
+                        )}
+
+                        
                     </div>
 
                 </div>
 
                 <div className="flex items-center gap-4">
-                    <div>{session?.user?.name}</div>
-                    <div>{session ? <SignOut /> : <SignIn />}</div>
+                    {userId && (
+                        <>
+                            <NotificationIconButton
+                                ref={notifButtonRef}
+                                onClick={() => setIsVisible(!isVisible)}
+                            />
+                            <NotificationFeedPopover
+                                buttonRef={notifButtonRef}
+                                isVisible={isVisible}
+                                onClose={() => setIsVisible(false)}
+                                renderItem={({ item, ...props }) => (
+                                    <NotificationCell key={item?.data?.itemId} {...props} item={item}>
+                                        <div className="rounded-xl">
+                                            <Link
+                                            className="text-blue-400 hover:text-blue-500"
+                                            onClick={() => {
+                                                setIsVisible(false);
+                                            }}
+                                            href={`/items/${item?.data?.itemId}`}
+                                            >
+                                                Someone outbidded you on {" "}
+                                                <span className="font-bold">{item?.data?.itemName}</span>
+                                                {" "} by ${convertToDollar(item?.data?.bidAmount)}
+                                            
+                                            </Link>
+                                        </div>
+                                    </NotificationCell>
+                                )}
+                            />
+                        </>
+                    )}
+                    
+                    {session?.data?.user.image && (
+                        <Image
+                            src={session.data.user.image}
+                            width="40"
+                            height="40"
+                            alt="user avatar"
+                            className="rounded-full"
+                        />
+                    )}
+
+                    <div>{session?.data?.user?.name}</div>
+                    <div>{userId ? (
+                        <Button 
+                        type="submit"
+                        onClick={() => {
+                            signOut({
+                                callbackUrl: "/",
+                            })
+                        }}>
+                            Sign Out
+                        </Button> 
+                        ): (
+                        <Button 
+                        type="submit"
+                        onClick={() => {signIn()}}>
+                            Sign In
+                        </Button> 
+                    )}</div>
                 </div>
             </div>
         </div>
     )
 }
+
+
+// //Notification cell custom message
+// renderItem={(props) => <MyNotificationCell {...props} />}
+
+// //Notification cell custom message complete
+// import { NotificationFeed, NotificationCell } from "@knocklabs/react";
+
+// <NotificationFeed
+//   renderItem={({ item, ...props }) => (
+//     <NotificationCell {...props} item={item}>
+//       <MyCustomComponent />
+//     </NotificationCell>
+//   )}
+// />;
+
+
+// //Date Picker
+
+//endDate: timestamp("endDate", {mode: "date'}).notNull(),

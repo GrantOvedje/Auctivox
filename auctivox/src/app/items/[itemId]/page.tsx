@@ -6,6 +6,8 @@ import { convertToDollar } from "@/util/currency";
 import { createBidAction } from "./actions";
 import { getBidsForItem } from "@/data-access/bids";
 import { getItem } from "@/data-access/items";
+import { auth } from "@/auth";
+import { isBidOver } from "@/util/bid-is-over";
 
 function formatTimestamp(timestamp: Date) {
     return formatDistance(timestamp, new Date(), { addSuffix: true })
@@ -19,6 +21,8 @@ export default async function ItemPage({
     const { itemId } = await params; //await before destructuring
     
     const item = await getItem(parseInt(itemId))
+
+    const session = await auth();
 
     if (!item) {
         return (
@@ -41,6 +45,8 @@ export default async function ItemPage({
 
     const hasBids = allBids.length > 0;
 
+    const canPlaceBid = session && item.userId !== session.user.id && !isBidOver(item);
+
     return (
         <main className="space-y-8">
             <div className="flex gap-12">
@@ -48,6 +54,12 @@ export default async function ItemPage({
                     <h1 className="text-4xl font-bold">
                         <span className="font-normal">Auction for </span>{item.name}
                     </h1>
+
+                    {isBidOver(item) && (
+                        <button disabled className="w-fit bg-red-500 hover:bg-red-400 rounded-lg">
+                            Bidding Over
+                        </button>
+                    )}
 
                     { item.imageUrl && 
                         <h1 className="">
@@ -79,9 +91,12 @@ export default async function ItemPage({
                 <div className="space-y-4 flex-1">
                     <div className="flex justify-between">
                         <h2 className="text-2xl font-bold">Current Bids</h2>
-                        <form action={createBidAction.bind(null, item.id)}>
-                            <Button>Place a Bid</Button>
-                        </form>
+                        {canPlaceBid && (
+                            <form action={createBidAction.bind(null, item.id)}>
+                                <Button>Place a Bid</Button>
+                            </form>
+                        )}
+                        
                     </div>
                     
 
@@ -105,9 +120,11 @@ export default async function ItemPage({
                         <Image src="/package.svg"  width="200" height="200" alt="Package"/>
 
                         <h2 className="text-2xl font-bold">No bids yet</h2>
-                        <form action={createBidAction.bind(null, item.id)}>
-                            <Button>Place a Bid</Button>
-                        </form>
+                        {canPlaceBid && (
+                            <form action={createBidAction.bind(null, item.id)}>
+                                <Button>Place a Bid</Button>
+                            </form>
+                        )}                        
                         
                     </div>
                 )}
