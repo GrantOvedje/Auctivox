@@ -21,9 +21,34 @@ export async function createItemAction( formData: FormData ) {
 
     const startingPrice = formData.get("startingPrice") as string;
 
-    const priceAsCents = Math.floor(parseFloat(startingPrice) * 100)
+    const priceAsNaira = Math.floor(parseFloat(startingPrice))
 
-      //  Handle file upload
+  // 🟢 Parse end date
+    const endDateRaw = formData.get("endDate") as string;
+    const endDate = new Date(endDateRaw);
+
+
+  // Handle file upload
+    const file = formData.get("image") as File | null;
+    let imageUrl: string | null = null;
+
+    if (file) {
+        imageUrl = await uploadImage(file);
+    }
+
+  // ...continue inserting item into DB with imageUrl
+        
+    await database.insert(items).values({
+        name: formData.get("name") as string,
+        startingPrice: priceAsNaira,
+        userId: user.id,
+        imageUrl,
+        endDate,
+    });
+    redirect("/");
+}
+
+    //  Handle file upload
     // const file = formData.get("image") as File | null;
     // let imageUrl: string | null = null;
 
@@ -47,29 +72,3 @@ export async function createItemAction( formData: FormData ) {
 
     //     imageUrl = publicUrl.publicUrl;
     // }
-
-
-  // 🟢 Parse end date
-    const endDateRaw = formData.get("endDate") as string;
-    const endDate = new Date(endDateRaw);
-
-
-  // Handle file upload
-    const file = formData.get("image") as File | null;
-    let imageUrl: string | null = null;
-
-    if (file) {
-        imageUrl = await uploadImage(file);
-    }
-
-  // ...continue inserting item into DB with imageUrl
-        
-    await database.insert(items).values({
-        name: formData.get("name") as string,
-        startingPrice: priceAsCents,
-        userId: user.id,
-        imageUrl,
-        endDate,
-    });
-    redirect("/");
-}

@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { convertToDollar } from "@/util/currency";
+import { formatNaira } from "@/util/currency";
 import { NotificationCell, NotificationFeedPopover, NotificationIconButton } from "@knocklabs/react";
 import { signIn, signOut, useSession } from "next-auth/react";
 import Image from "next/image";
@@ -18,7 +18,7 @@ export function Header(){
 
     return (
         <div className="bg-gray-200 py-2">
-            <div className="container flex justify-between items-center">
+            <div className="px-4 sm:px-6 lg:px-8  xl:px-10 flex justify-between items-center">
                 <div className="flex items-center gap-12">
                     <Link href="/" className="hover:unerline flex items-center gap-1 text-2xl font-bold">
                         Auctivox
@@ -78,7 +78,7 @@ export function Header(){
                                             >
                                                 Someone outbidded you on {" "}
                                                 <span className="font-bold">{item?.data?.itemName}</span>
-                                                {" "} by ${convertToDollar(item?.data?.bidAmount)}
+                                                {" "}by{" "}{formatNaira(item?.data?.bidAmount)}
                                             
                                             </Link>
                                         </div>

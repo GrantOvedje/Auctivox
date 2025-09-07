@@ -35,7 +35,7 @@ export default function RootLayout({
         <SessionProvider>
           <AppKnockProvider>
             <Header />
-            <div className="container mx-auto py-12">{children}</div>
+            <div className="px-4 sm:px-6 lg:px-8 xl:px-10 py-12">{children}</div>
           </AppKnockProvider>
         </SessionProvider>
       </body>

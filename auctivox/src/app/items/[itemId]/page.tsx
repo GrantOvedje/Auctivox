@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { formatDistance } from "date-fns";
 import Link from "next/link";
 import Image from "next/image";
-import { convertToDollar } from "@/util/currency";
+import { formatNaira } from "@/util/currency";
 import { createBidAction } from "./actions";
 import { getBidsForItem } from "@/data-access/bids";
 import { getItem } from "@/data-access/items";
@@ -56,9 +56,9 @@ export default async function ItemPage({
                     </h1>
 
                     {isBidOver(item) && (
-                        <button disabled className="w-fit bg-red-500 hover:bg-red-400 rounded-lg">
+                        <h2  className="text-2xl font-bold text-red-500">
                             Bidding Over
-                        </button>
+                        </h2>
                     )}
 
                     { item.imageUrl && 
@@ -76,14 +76,14 @@ export default async function ItemPage({
                     <div className="text-xl space-y-4">
                         <div>
                             Current Bid{" "}
-                            <span className="font-bold"> ${convertToDollar(item.currentBid)}</span>
+                            <span className="font-bold">{formatNaira(item.currentBid)}</span>
                         </div>
                         <div>
                             Starting Price of {" "}
-                            <span className="font-bold">${convertToDollar(item.startingPrice)}</span>
+                            <span className="font-bold">{formatNaira(item.startingPrice)}</span>
                         </div>
                         <div>
-                            Bid Interval <span className="font-bold">${convertToDollar(item.bidInterval)}</span>
+                            Bid Interval <span className="font-bold">{formatNaira(item.bidInterval)}</span>
                         </div>
                     </div>
                 </div>
@@ -106,7 +106,7 @@ export default async function ItemPage({
                             <li key={bid.id} className="bg-gray-100 rounded-xl p-8">
                                 <div className="flex gap-4">
                                     <div>
-                                        <span className="font-bold">${convertToDollar(bid.amount)}</span>{" "}by{" "}
+                                        <span className="font-bold">{formatNaira(bid.amount)}</span>{" "}by{" "}
                                         <span className="font-bold">{bid.user.name}</span>
                                     </div>
                                     

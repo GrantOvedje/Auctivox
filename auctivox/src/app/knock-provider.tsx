@@ -21,7 +21,3 @@ export function AppKnockProvider({children}: {children: ReactNode}) {
     </KnockProvider>
   );
 };
-
-console.log("Knock API keys: ", env.NEXT_PUBLIC_KNOCK_PUBLIC_API_KEY );
-
-console.log("Knock feed id: ", env.NEXT_PUBLIC_KNOCK_FEED_ID );
